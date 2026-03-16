@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class AbilityRunner : MonoBehaviour
 {
-    [SerializeField] IAbility currentAbility = new RageAbility();
+    [SerializeField] IAbility currentAbility =
+        new DelayDecorator(new RageAbility());
 
     public void UseAbility()
     {
@@ -13,6 +14,22 @@ public class AbilityRunner : MonoBehaviour
 public interface IAbility
 {
     void Use(GameObject currentGameObject);
+}
+
+public class DelayDecorator : IAbility
+{
+    private IAbility decoratedAbility;
+
+    public DelayDecorator(IAbility decoratedAbility)
+    {
+        this.decoratedAbility = decoratedAbility;
+    }
+
+    public void Use(GameObject currentGameObject)
+    {
+        //to do some delay logic
+        decoratedAbility.Use(currentGameObject);
+    }
 }
 
 public class RageAbility : IAbility

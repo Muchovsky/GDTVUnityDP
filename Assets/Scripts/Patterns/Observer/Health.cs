@@ -2,14 +2,26 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Health : MonoBehaviour {
+public class Health : MonoBehaviour
+{
     [SerializeField] float fullHealth = 100f;
     [SerializeField] float drainPerSecond = 2f;
     float currentHealth = 0;
 
-    private void Awake() {
+    void Awake()
+    {
         ResetHealth();
         StartCoroutine(HealthDrain());
+    }
+
+    void OnEnable()
+    {
+        GetComponent<Level>().OnLevelUpAction += ResetHealth;
+    }
+
+    void OnDisable()
+    {
+        GetComponent<Level>().OnLevelUpAction -= ResetHealth;
     }
 
     public float GetHealth()
@@ -17,12 +29,12 @@ public class Health : MonoBehaviour {
         return currentHealth;
     }
 
-    public void ResetHealth()
+    void ResetHealth()
     {
         currentHealth = fullHealth;
     }
 
-    private IEnumerator HealthDrain()
+    IEnumerator HealthDrain()
     {
         while (currentHealth > 0)
         {

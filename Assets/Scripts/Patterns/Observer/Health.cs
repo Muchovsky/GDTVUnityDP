@@ -1,27 +1,25 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Health : MonoBehaviour
-{
+public class Health : MonoBehaviour {
     [SerializeField] float fullHealth = 100f;
     [SerializeField] float drainPerSecond = 2f;
+    [SerializeField] Image healthBar;
     float currentHealth = 0;
 
-    void Awake()
-    {
+    private void Awake() {
         ResetHealth();
         StartCoroutine(HealthDrain());
     }
-
-    void OnEnable()
-    {
-        GetComponent<Level>().OnLevelUpAction += ResetHealth;
+    
+    private void OnEnable() {
+        GetComponent<Level>().onLevelUpAction += ResetHealth;
     }
 
-    void OnDisable()
-    {
-        GetComponent<Level>().OnLevelUpAction -= ResetHealth;
+    private void OnDisable() {
+        GetComponent<Level>().onLevelUpAction -= ResetHealth;
     }
 
     public float GetHealth()
@@ -32,14 +30,21 @@ public class Health : MonoBehaviour
     void ResetHealth()
     {
         currentHealth = fullHealth;
+        UpdateUI();
     }
 
-    IEnumerator HealthDrain()
+    private IEnumerator HealthDrain()
     {
         while (currentHealth > 0)
         {
             currentHealth -= drainPerSecond;
+            UpdateUI();
             yield return new WaitForSeconds(1);
         }
+    }
+
+    private void UpdateUI()
+    {
+        healthBar.fillAmount = currentHealth / fullHealth;
     }
 }

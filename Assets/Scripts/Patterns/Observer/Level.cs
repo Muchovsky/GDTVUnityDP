@@ -2,40 +2,50 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
-public class Level : MonoBehaviour
-{
+public class Level : MonoBehaviour {
+
     [SerializeField] int pointsPerLevel = 200;
     [SerializeField] UnityEvent onLevelUp;
+    [SerializeField] Text levelDisplayText;
+    [SerializeField] Text expDisplayText;
+    [SerializeField] Button increaseXPButton;
     int experiencePoints = 0;
 
-    /*public delegate void CallbackType();
-    public event CallbackType OnLevelUpAction;*/
+    public event Action onLevelUpAction;
 
-    public event Action OnLevelUpAction;
-
-    IEnumerator Start()
+    void Start()
     {
-        while (true)
+        UpdateUI();
+        /*while (true)
         {
             yield return new WaitForSeconds(.2f);
             GainExperience(10);
-        }
+        }*/
+        increaseXPButton.onClick.AddListener(()=> GainExperience(10));
     }
 
     public void GainExperience(int points)
     {
-        int currentLevel = GetLevel();
+        int level = GetLevel();
         experiencePoints += points;
-
-        if (GetLevel() > currentLevel)
+        UpdateUI();
+        if (GetLevel() > level)
         {
             onLevelUp.Invoke();
-            if (OnLevelUpAction != null)
+            UpdateUI();
+            if (onLevelUpAction != null)
             {
-                OnLevelUpAction();
+                onLevelUpAction();
             }
         }
+    }
+
+    private void UpdateUI()
+    {
+        levelDisplayText.text = $"Level: {GetLevel()}";
+        expDisplayText.text = $"Exp: {GetExperience()}";
     }
 
     public int GetExperience()

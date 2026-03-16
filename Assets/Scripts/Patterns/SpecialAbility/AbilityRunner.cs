@@ -3,7 +3,13 @@ using UnityEngine;
 public class AbilityRunner : MonoBehaviour
 {
     [SerializeField] IAbility currentAbility =
-        new DelayDecorator(new RageAbility());
+        new SequenceComposite(new IAbility[]
+        {
+            new HealingAbility(),
+            new RageAbility(),
+            new DelayDecorator(new RageAbility())
+        });
+
 
     public void UseAbility()
     {
@@ -14,6 +20,25 @@ public class AbilityRunner : MonoBehaviour
 public interface IAbility
 {
     void Use(GameObject currentGameObject);
+}
+
+public class SequenceComposite : IAbility
+{
+    IAbility[] abilities;
+
+    public SequenceComposite(IAbility[] abilities)
+    {
+        this.abilities = abilities;
+    }
+
+
+    public void Use(GameObject currentGameObject)
+    {
+        foreach (var ability in abilities)
+        {
+            ability.Use(currentGameObject);
+        }
+    }
 }
 
 public class DelayDecorator : IAbility
